@@ -1,25 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 @Entity()
-export class Todo { 
+export class Todo {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column({
+    @Column("varchar", {
         length: 100
     })
     title: string;
 
-    @Column({
+    @Column("varchar", {
         length: 250
     })
     description: string;
 
-    @Column({
+    @Column("varchar", {
         length: 100
     })
     status: string
 
     @CreateDateColumn()
     createdAt: string
+
+    @UpdateDateColumn()
+    updatedAt: string
 }
