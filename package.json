@@ -1,0 +1,19 @@
+{
+  "name": "tugas-todolist",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Baghram/TodoTypeScript.git"
+  },
+  "author": "Yoko",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Baghram/TodoTypeScript/issues"
+  },
+  "homepage": "https://github.com/Baghram/TodoTypeScript#readme"
+}
