@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
-
+import { type } from "os";
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, ManyToMany, JoinTable } from "typeorm";
+import {Todo} from './Todo'
 @Entity()
 export class User {
 
@@ -11,5 +12,8 @@ export class User {
 
     @Column()
     password: string;
+
+    @OneToMany(type => Todo, todo=>todo.userId ) @JoinTable()
+    todo: Todo
 
 }

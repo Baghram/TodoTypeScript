@@ -1,35 +1,86 @@
+import 'dotenv/config';
 import * as Hapi from '@hapi/hapi';
 import "reflect-metadata";
-import { createConnection, getConnection } from "typeorm";
+import { getConnection } from "typeorm";
 import { User } from '../entity/User';
+import * as bcrypt from 'bcrypt'
+import * as JWT from 'jsonwebtoken'
 
 class userController {
-    static Register(request: Hapi.Request, response: Hapi.ResponseToolkit) {
-        let account;
-
-        const accountDatabase = getConnection().getRepository(User)
-        account = accountDatabase.find({
+    static async Register(request: Hapi.Request, response: Hapi.ResponseToolkit) {
+        let result = false;
+        let pass;
+        const salt = 10;
+        const accountDatabase = getConnection().getRepository(User);
+        const encryptPassword = await bcrypt.hash(request.payload.password, salt);
+        const isExist = await accountDatabase.findOne({
             where: {
-                username: request.headers.username
+                username: request.payload.username,
             }
-        })
-        if (account === {}) {
+        });
+        console.log(encryptPassword)
+        console.log(isExist)
+        if (isExist === undefined) {
             getConnection()
                 .createQueryBuilder()
                 .insert()
                 .into(User)
                 .values([
                     {
-                        username: request.headers.username,
-                        password: request.headers.password
+                        username: request.payload.username,
+                        password: encryptPassword
                     }
                 ])
                 .execute()
+                result = true
+        }
+        if(result) {
             return response.response({ message: 'Register Success!' }).code(201)
-        };
+        }
         return response.response({ message: 'Email Registered' }).code(404)
     }
-    static Login(request, response) {
+
+    static async Login(request, response) {
+        const accountDatabase = getConnection().getRepository(User);
+
+        const account = await accountDatabase.findOne({
+            where: {
+                username: request.payload.username,
+            }
+        }).then(async (result) => {
+            const compare = await bcrypt.compare(request.payload.password, result.password);
+            if (compare) {
+                return {
+                    status: 1,
+                    response: result,
+                };
+            }
+
+            return {
+                status: 0,
+                response: result,
+            };
+        }).catch(err => {
+            return {
+                status: 0,
+                response: err.toString(),
+            };
+        });
+        
+        if (account.status === 1) {
+            const token = JWT.sign({
+                userId: account.response.id,
+                email: account.response.username
+            }, process.env.secret)
+            return response.response({
+                message: 'Success Login',
+                Token: token
+            });
+        }
+
+        return response.response({
+            message: 'Login Failed'
+        });
     }
 }
 

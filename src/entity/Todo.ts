@@ -1,9 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, TableForeignKey, ManyToOne, JoinTable } from "typeorm";
+import {User} from './User'
 
 @Entity()
 export class Todo {
     @PrimaryGeneratedColumn()
     id: number;
+
+    @Column()
+    userId: number
 
     @Column("varchar", {
         length: 100
@@ -25,4 +29,7 @@ export class Todo {
 
     @UpdateDateColumn()
     updatedAt: string
+
+    @ManyToOne(type => User, user=> user.id) @JoinTable()
+    user: User
 }

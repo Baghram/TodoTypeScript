@@ -1,8 +1,16 @@
 import "reflect-metadata";
+import 'dotenv/config';
 import * as Hapi from '@hapi/hapi';
-import { createConnection } from 'typeorm';
+import * as Joi from '@hapi/joi'
+import * as Jwt from 'hapi-auth-jwt2'
+import { createConnection, getConnection } from 'typeorm';
 import userController from './Controller/userController';
 import Controller from './Controller/Controller'
+import { User } from './entity/User'
+import { request } from "http";
+import { HeapInfo } from "v8";
+import { Console } from "console";
+import { decode } from "punycode";
 
 const init = async () => {
 
@@ -11,27 +19,70 @@ const init = async () => {
         host: 'localhost'
     });
 
+    server.register(Jwt);
+
+    server.auth.strategy('jwt', 'jwt',
+        {
+            key: process.env.secret,
+           
+            verifyOptions: {
+                algorithms: [
+                    'HS256'
+                ],
+            },
+            validate: async (decoded, request, response) => {
+                const userDatabase = getConnection().getRepository(User);
+                const account = await userDatabase.findOne({
+                    where: {
+                        username: decoded.email,
+                    },
+                });
+                console.log(decoded);
+                if(account) {
+                    request.authenticated = account;
+                    return {
+                        isValid: true,
+                    };
+                }
+                return {
+                    isValid: false,
+                };
+            },
+        });
+
+    server.auth.default('jwt');
+
     server.route([
         {
             method: 'GET',
             path: '/',
             handler: (request: Hapi.Request, response: Hapi.ResponseToolkit) => {
-                console.log(request.headers);
+                console.log(request);
                 return {
                     status: 200,
                     message: 'Home Domain Conneccccted!!'
                 };
+            },
+            options: {
+                auth: false
             }
+
         },
         {
             method: 'POST',
             path: '/register',
             handler: (request: Hapi.Request, response: Hapi.ResponseToolkit) => userController.Register(request, response),
+            options: {
+                auth: false
+            }
         },
         {
             method: 'POST',
             path: '/login',
-            handler: (request: Hapi.Request, response: Hapi.ResponseToolkit) => userController.Login(request, response)
+            handler: (request: Hapi.Request, response: Hapi.ResponseToolkit) => userController.Login(request, response),
+            options: {
+                auth: false,
+            },
         },
         {
             method: 'GET',
