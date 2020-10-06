@@ -1,16 +1,12 @@
 import "reflect-metadata";
 import 'dotenv/config';
 import * as Hapi from '@hapi/hapi';
-import * as Joi from '@hapi/joi'
 import * as Jwt from 'hapi-auth-jwt2'
 import { createConnection, getConnection } from 'typeorm';
 import userController from './Controller/userController';
 import Controller from './Controller/Controller'
 import { User } from './entity/User'
-import { request } from "http";
-import { HeapInfo } from "v8";
-import { Console } from "console";
-import { decode } from "punycode";
+
 
 const init = async () => {
 
@@ -95,7 +91,7 @@ const init = async () => {
             handler: (request: Hapi.Request, response: Hapi.ResponseToolkit) => Controller.addData(request, response)
         },
         {
-            method: 'UPDATE',
+            method: 'PATCH',
             path: `/todos/update/{id}`,
             handler: (request: Hapi.Request, response: Hapi.ResponseToolkit) => Controller.updateData(request, response)
         },

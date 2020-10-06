@@ -25,11 +25,14 @@ export class Todo {
     status: string
 
     @CreateDateColumn()
-    createdAt: string
+    createdAt: Date
 
     @UpdateDateColumn()
-    updatedAt: string
+    updatedAt: Date
 
-    @ManyToOne(type => User, user=> user.id) @JoinTable()
+    @ManyToOne(type => User, user=> user.id)
     user: User
+
+    @JoinTable({name: 'username'})
+    userDetail: User
 }
