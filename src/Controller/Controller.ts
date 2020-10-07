@@ -54,7 +54,7 @@ class Controller {
                 id: request.params.id,
             }
         });
-        if(getTodos){
+        if(getTodos.userId === request.authenticated.id){
             const updateTodos = await todoDatabase.update(request.params.id , {
                 title: request.payload.title,
                 description: request.payload.description,
@@ -67,7 +67,7 @@ class Controller {
             }).code(200)
         }
         return response.response({
-            message: 'Selected Todos Do Not Exist'
+            message: 'Update Error!!'
         }).code(404)
 
     };
@@ -78,14 +78,14 @@ class Controller {
                 id: request.params.id,
             }
         });
-        if(getTodos) {
+        if(getTodos.userId === request.authenticated.id) {
             const deleteTodos = await todoDatabase.delete(request.params.id)
             return response.response({
                 message: 'Delete Success!!'
             }).code(200)
         };
         return response.response({
-            message: 'Selected Todos Do Not Exist'
+            message: 'Update Error!!'
         }).code(404)
         
     };

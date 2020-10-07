@@ -41,6 +41,7 @@ class userController {
     }
 
     static async Login(request, response) {
+        console.log('masuk login')
         const accountDatabase = getConnection().getRepository(User);
 
         const account = await accountDatabase.findOne({
@@ -68,6 +69,7 @@ class userController {
         });
         
         if (account.status === 1) {
+            console.log('MASUK IF SUKSES LOGIN')
             const token = JWT.sign({
                 userId: account.response.id,
                 email: account.response.username
