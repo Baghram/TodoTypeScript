@@ -85,7 +85,7 @@ class Controller {
             }).code(200)
         };
         return response.response({
-            message: 'Update Error!!'
+            message: 'Delete Error!!'
         }).code(404)
         
     };
